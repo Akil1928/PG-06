@@ -10,14 +10,15 @@ public class AdjacencyMatrixGraph<T extends Comparable<T>>implements Graph<T> {
     public Vertex<T>[] vertexList; //arreglpo estatico de objeto tipo vertex
     private T[][] adjacencyMatrix; //arreglo multidimensional tipo matriz
     public int counter; //contador de vertices agregados
-
-    public AdjacencyMatrixGraph(int n) {
-    if(n<=0) System.exit(1);
-    this.n = n;
-    this.vertexList = new Vertex[n];
-    this.adjacencyMatrix = (T[][]) new Comparable[n][n];
-    this.counter = 0;
-    initMatrix();
+    public boolean directed;
+    public AdjacencyMatrixGraph(int n, boolean directed) {
+        if(n<=0) System.exit(1);
+        this.n = n;
+        this.vertexList = new Vertex[n];
+        this.adjacencyMatrix = (T[][]) new Comparable[n][n];
+        this.counter = 0;
+        this.directed=directed;
+        initMatrix();
     }
 
     private void initMatrix() {
@@ -48,11 +49,11 @@ public class AdjacencyMatrixGraph<T extends Comparable<T>>implements Graph<T> {
 
     @Override
     public boolean containsVertex(T element) throws GraphException, ListException {
-       if(isEmpty()) throw new GraphException("Adjacency Matrix Graph is Empty");
-       for (int i = 0; i < counter; i++) {
-           if(element.equals(vertexList[i].data)) return true;
-       }
-       return false; //no lo encontro
+        if(isEmpty()) throw new GraphException("Adjacency Matrix Graph is Empty");
+        for (int i = 0; i < counter; i++) {
+            if(element.equals(vertexList[i].data)) return true;
+        }
+        return false; //no lo encontro
     }
 
     @Override
@@ -63,19 +64,19 @@ public class AdjacencyMatrixGraph<T extends Comparable<T>>implements Graph<T> {
 
     @Override
     public void addVertex(T element) throws GraphException, ListException {
-      if(counter>= vertexList.length) throw new GraphException("Adjacency Matrix Graph is full");
-      vertexList[counter++] = new Vertex<>(element);
+        if(counter>= vertexList.length) throw new GraphException("Adjacency Matrix Graph is full");
+        vertexList[counter++] = new Vertex<>(element);
     }
 
     @Override
     public void addEdge(T a, T b) throws GraphException, ListException {
         if(!containsVertex(a) || !containsVertex(b))
             throw new GraphException("Adjacency Matrix Graph Not Contains Vertex");
-       if(!containsEdge(a, b)) {
-           adjacencyMatrix[indexOf(a)][indexOf(b)] = (T) Integer.valueOf(1);
-           //graafo no dirigido
-           adjacencyMatrix[indexOf(a)][indexOf(b)] = (T) Integer.valueOf(1);
-       }
+        if(!containsEdge(a, b)) {
+            adjacencyMatrix[indexOf(a)][indexOf(b)] = (T) Integer.valueOf(1);
+            //graafo no dirigido
+            if(!directed)adjacencyMatrix[indexOf(a)][indexOf(b)] = (T) Integer.valueOf(1);
+        }
 
     }
 
@@ -94,7 +95,7 @@ public class AdjacencyMatrixGraph<T extends Comparable<T>>implements Graph<T> {
         if(containsEdge(a, b)) {
             adjacencyMatrix[indexOf(a)][indexOf(b)] = weight;
             //graafo no dirigido
-            adjacencyMatrix[indexOf(b)][indexOf(a)] = weight;
+            if(!directed)adjacencyMatrix[indexOf(b)][indexOf(a)] = weight;
         }
     }
 
@@ -103,15 +104,27 @@ public class AdjacencyMatrixGraph<T extends Comparable<T>>implements Graph<T> {
         if(!containsVertex(a) || !containsVertex(b))
             throw new GraphException("Adjacency Matrix Graph Not Contains Vertex");
         if(!containsEdge(a, b)) {
-        adjacencyMatrix[indexOf(a)][indexOf(b)] = weight;
-        //graafo no dirigido
-        adjacencyMatrix[indexOf(b)][indexOf(a)] = weight;
+            adjacencyMatrix[indexOf(a)][indexOf(b)] = weight;
+            //graafo no dirigido
+            if(!directed)adjacencyMatrix[indexOf(b)][indexOf(a)] = weight;
         }
     }
 
     @Override
     public void removeVertex(T element) throws GraphException, ListException {
+        int index = indexOf(element);
+        if(index!=-1) { //ver si el vertice existe en la lista
+            for (int i = index; i < counter - 1; i++) {
+                vertexList[i] = vertexList[i + 1];
 
+                //ahora hacemos lo mismo en la matriz con las filas, columnas
+                //primero movemos todas las filas, una pos hacia arriba
+
+
+            }
+            //luego movemos todas las cols una pos a la izquierda
+
+        }
     }
 
     @Override
@@ -123,6 +136,8 @@ public class AdjacencyMatrixGraph<T extends Comparable<T>>implements Graph<T> {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Adjacency Matrix Graph: \n");
+        String graphType = directed ? "Directed" : "Undirected";
+        sb.append("Graph Type: ").append(graphType).append("\n");
         //mostramos todos los vertices
         for (int i = 0; i < n; i++) {
             sb.append("\nThe vertex in position: [").append(i)
@@ -155,7 +170,7 @@ public class AdjacencyMatrixGraph<T extends Comparable<T>>implements Graph<T> {
         return "";
     }
 
-///// AYUDAS ////////////
+    ///// AYUDAS ////////////
     public boolean equals(T a, T b) {
         return a == null ? b == null : a.equals(b);
     }
