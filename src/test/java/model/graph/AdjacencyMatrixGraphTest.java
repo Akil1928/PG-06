@@ -11,7 +11,7 @@ class AdjacencyMatrixGraphTest {
 
     @Test
     void testAdjecencyMatrixGraph() {
-        AdjacencyMatrixGraph<Integer> graph = new AdjacencyMatrixGraph<>(10);
+        AdjacencyMatrixGraph<Integer> graph = new AdjacencyMatrixGraph<>(10, false);
         try {
             //agregamos vertices
         for (int i = 0; i < 10; i++)
