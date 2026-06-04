@@ -16,10 +16,11 @@ class AdjacencyMatrixGraphTest {
         AdjacencyMatrixGraph<Integer> graph = new AdjacencyMatrixGraph<>(10, false);
         try {
             //agregamos vertices
-        for (int i = 0; i < 10; i++)
-            graph.addVertex(i);
+            for (int i = 0; i < 10; i++)
+                graph.addVertex(i);
 
-        //agregamos aristas
+            //agregamos aristas - AHORA CONECTAMOS DESDE EL VÉRTICE 0
+            graph.addEdgeAndWeight(0,1, new Random().nextInt(5,30));
             graph.addEdgeAndWeight(1,2, new Random().nextInt(5,30));
             graph.addEdgeAndWeight(1,3, new Random().nextInt(5,30));
             graph.addEdgeAndWeight(2,3, new Random().nextInt(5,30));
@@ -48,14 +49,15 @@ class AdjacencyMatrixGraphTest {
             System.out.println("Remove Edge: 4-5");
             graph.removeEdge(4,5);
 
-    }catch (GraphException | ListException e) {
+        }catch (GraphException | ListException e) {
             throw new RuntimeException(e);
-    } catch (QueueException e) {
+        } catch (QueueException e) {
             throw new RuntimeException(e);
         } catch (StackException e) {
             throw new RuntimeException(e);
         }
         System.out.println(graph);
     }
+
 
 }
