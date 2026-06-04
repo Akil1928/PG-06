@@ -7,7 +7,7 @@ public class LinkedQueue<T> implements MyQueue<T> {
     private Node<T> rear;
     private int size;
 
-    public LinkedQueue(int capacity) {
+    public LinkedQueue() {
         this.front = null;
         this.rear = null;
         this.size = 0;
@@ -127,7 +127,7 @@ public class LinkedQueue<T> implements MyQueue<T> {
         StringBuilder sb = new StringBuilder(" FRONT → ");
 
         try {
-            LinkedQueue<T> auxQueue = new LinkedQueue<>(size());
+            LinkedQueue<T> auxQueue = new LinkedQueue<>();
 
             while (!isEmpty()) {
                 sb.append("[").append(peek()).append("]");
