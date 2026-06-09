@@ -91,7 +91,7 @@ public class AdjacencyMatrixGraph<T extends Comparable<T>> implements Graph<T> {
 
     }
 
-    private int indexOf(T element) throws GraphException, ListException {
+    public int indexOf(T element) throws GraphException, ListException {
         for (int i = 0; i < counter; i++) {
             if (element.equals(vertexList[i].data)) return i;
         }

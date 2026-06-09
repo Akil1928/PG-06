@@ -109,8 +109,24 @@ public class AdjacencyListGraph<T extends Comparable<T>> extends AdjacencyMatrix
 
     @Override
     public void removeVertex(T element) throws GraphException, ListException {
+        if (containsVertex(element))
+            throw new GraphException("Adjacency list Graph is Empty");
 
-        super.removeVertex(element);
+        int index = indexOf(element);
+        if (index != -1) { //si el vertice existe en la lista de vertices
+            for (int i = index; i < counter - 1; i++)
+                vertexList[i] = vertexList[i + 1];
+            counter--;//lo debemos decrementar por el vertice suprimido
+
+            //ahora debemos buscar el rastro del vertice suprimido en las listas enlazadas de los otros vertices
+            //de vecinos a los otros vertices
+            for (int i = 0; i < counter; i++) {
+                Vertex<T> vertex = vertexList[i];
+                vertex.headnode = removeNeighbor(vertex.headnode, element);
+            }
+
+        }
+
     }
 
     @Override
@@ -130,24 +146,24 @@ public class AdjacencyListGraph<T extends Comparable<T>> extends AdjacencyMatrix
         }
     }
 
-    private Node<T> removeNeighbor(Node<T> headnode, T element) {
-        if (headnode == null) return null;
-
-        // Si el nodo a eliminar es el primero
-        if (headnode.data.compareTo(element) == 0) {
-            return headnode.neighbor;
-        }
-
-        // Buscar el nodo a eliminar
-        Node<T> aux = headnode;
-        while (aux.neighbor != null) {
-            if (aux.neighbor.data.compareTo(element) == 0) {
-                aux.neighbor = aux.neighbor.neighbor;
-                return headnode;
+    private Node<T> removeNeighbor(Node<T> headNode, T element) throws ListException {
+        if (headNode == null) throw new ListException("Linked List is Empty");
+        //El elemento a suprimir es el primero
+        if(equals(headNode.data, element)) headNode = headNode.neighbor; //Queda apuntado al siguiente nodo vecino
+            //Caso 2. El elemento a suprimir puede estar en medio o al final de la lista
+        else{
+            Node<T> prev = headNode;//anterior
+            while(prev.neighbor!=null){
+                if(equals(prev.neighbor.data, element)) {
+                    Node<T> removed = prev.neighbor; //Es el nodo a eliminar
+                    //Desenlaza el nodo
+                    prev.neighbor = removed.neighbor;
+                }
+                prev = prev.neighbor; //Lo movemos al siguiente vecino
             }
-            aux = aux.neighbor;
+
         }
-        return headnode;
+        return headNode;//Modificado sin el nodo eliminado
     }
 
     @Override
