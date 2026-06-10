@@ -116,7 +116,30 @@ if(!containsEdge(a, b)) {
 
     @Override
     public void addEdgeAndWeight(T a, T b, T c) throws GraphException, ListException {
+        if (!containsVertex(a) || !containsVertex(b)) {
+            throw new GraphException("Cannot add edge. One or both vertices do not exist in the graph.");
+        }
 
+        // Add edge (a, b) if it doesn't exist
+        if (!containsEdge(a, b)) {
+            Node<T> nodeA = getNode(a);
+            addNeighbor(nodeA, b, c); // Add neighbor with weight
+        } else {
+            // If edge exists, just update the weight
+            Node<T> nodeA = getNode(a);
+            getNodeNeighbor(nodeA, b).weight = c;
+        }
+
+        // If undirected, do the same for (b, a)
+        if (!directed) {
+            if (!containsEdge(b, a)) {
+                Node<T> nodeB = getNode(b);
+                addNeighbor(nodeB, a, c); // Add neighbor with weight
+            } else {
+                Node<T> nodeB = getNode(b);
+                getNodeNeighbor(nodeB, a).weight = c;
+            }
+        }
     }
 
     @Override
@@ -170,14 +193,123 @@ if(!containsEdge(a, b)) {
         }
     }
 
+    /***
+     * RECORRIDO POR PROFUNDIDAD
+     * @return
+     * @throws model.graph.GraphException
+     * @throws model.Stack.StackException
+     * @throws model.LinkedList.ListException
+     */
     @Override
     public String dfs() throws GraphException, StackException, ListException {
-        return "";
+        if (isEmpty()) {
+            throw new GraphException("Grafo Enlazado Vacio");
+        }
+
+        int numVertices = size();
+        boolean[] visited = new boolean[numVertices]; // Array para controlar los vértices visitados
+        StringBuilder sb = new StringBuilder(); // Para construir la cadena de recorrido
+        LinkedStack<T> stack = new LinkedStack<>(); // Pila para el recorrido DFS
+
+        // Recorrer todos los vértices para manejar grafos desconectados
+        for (int i = 0; i < numVertices; i++) {
+            if (!visited[i]) {
+                // Iniciar un nuevo recorrido DFS desde este vértice no visitado
+                stack.push((T)get(i)); // Empujar el dato del vértice actual a la pila
+                visited[i] = true; // Marcarlo como visitado
+                sb.append(get(i)).append(", "); // Añadirlo al resultado
+
+                while (!stack.isEmpty()) {
+                    T currentVertexData = stack.peek(); // Obtener el elemento superior sin removerlo
+                    int currentVertexIndex = getIndexOfVertex(currentVertexData); // Obtener su índice
+
+                    // Buscar un vecino no visitado del vértice actual
+                    Node<T> neighborIterator = getNodeByIndex(currentVertexIndex).neighbor; // Obtener la lista de vecinos
+                    T unvisitedNeighborData = null;
+
+                    while (neighborIterator != null) {
+                        T neighborData = neighborIterator.data;
+                        int neighborIndex = getIndexOfVertex(neighborData);
+
+                        if (!visited[neighborIndex]) {
+                            unvisitedNeighborData = neighborData; // Encontramos un vecino no visitado
+                            break;
+                        }
+                        neighborIterator = neighborIterator.neighbor;
+                    }
+
+                    if (unvisitedNeighborData != null) {
+                        // Si se encontró un vecino no visitado, visitarlo y empujarlo a la pila
+                        int unvisitedNeighborIndex = getIndexOfVertex(unvisitedNeighborData);
+                        visited[unvisitedNeighborIndex] = true;
+                        sb.append(unvisitedNeighborData).append(", ");
+                        stack.push(unvisitedNeighborData);
+                    } else {
+                        // Si no hay vecinos no visitados, hacer "backtrack" (sacar de la pila)
+                        stack.pop();
+                    }
+                }
+            }
+        }
+
+        // Eliminar la coma y el espacio finales si la cadena no está vacía
+        if (sb.length() > 0) {
+            sb.setLength(sb.length() - 2);
+        }
+        return sb.toString();
     }
 
+    /***
+     * RECORRIDO POR AMPLITUD
+     * @return
+     * @throws model.graph.GraphException
+     */
     @Override
     public String bfs() throws GraphException, QueueException, ListException {
-        return "";
+        if (isEmpty()) {
+            throw new GraphException("Grafo Enlazado Vacio");
+        }
+
+        int numVertices = size();
+        boolean[] visited = new boolean[numVertices]; // Array para controlar los vértices visitados
+        StringBuilder sb = new StringBuilder(); // Para construir la cadena de recorrido
+        LinkedQueue<T> queue = new LinkedQueue<>(); // Cola para el recorrido BFS
+
+        // Recorrer todos los vértices para manejar grafos desconectados
+        for (int i = 0; i < numVertices; i++) {
+            if (!visited[i]) {
+                // Iniciar un nuevo recorrido BFS desde este vértice no visitado
+                T startVertexData = (T)get(i);
+                visited[i] = true; // Marcarlo como visitado
+                queue.enQueue(startVertexData); // Encolar el dato del vértice actual
+                sb.append(startVertexData).append(", "); // Añadirlo al resultado
+
+                while (!queue.isEmpty()) {
+                    T currentVertexData = queue.deQueue(); // Desencolar el vértice actual
+                    int currentVertexIndex = getIndexOfVertex(currentVertexData); // Obtener su índice
+
+                    // Recorrer los vecinos del vértice actual
+                    Node<T> neighborIterator = getNodeByIndex(currentVertexIndex).neighbor; // Obtener la lista de vecinos
+                    while (neighborIterator != null) {
+                        T neighborData = neighborIterator.data;
+                        int neighborIndex = getIndexOfVertex(neighborData);
+
+                        if (!visited[neighborIndex]) {
+                            visited[neighborIndex] = true; // Marcarlo como visitado
+                            queue.enQueue(neighborData); // Encolar el vecino
+                            sb.append(neighborData).append(", "); // Añadirlo al resultado
+                        }
+                        neighborIterator = neighborIterator.neighbor;
+                    }
+                }
+            }
+        }
+
+        // Eliminar la coma y el espacio finales si la cadena no está vacía
+        if (sb.length() > 0) {
+            sb.setLength(sb.length() - 2);
+        }
+        return sb.toString();
     }
 
     private Node<T> getNodeNeighbor(Node<T> headnode, T element) {
@@ -188,6 +320,16 @@ if(!containsEdge(a, b)) {
             aux = aux.neighbor;
         }
         return null;//si llega no encontro el nodo
+    }
+
+    // Helper method to get the index of a vertex
+    private int getIndexOfVertex(T element) throws ListException {
+        for (int i = 0; i < size(); i++) {
+            if (get(i).equals(element)) {
+                return i;
+            }
+        }
+        return -1; // Not found
     }
 
     /// // AYUDAS ////////////
