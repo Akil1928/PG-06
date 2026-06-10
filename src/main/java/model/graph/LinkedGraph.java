@@ -215,8 +215,8 @@ if(!containsEdge(a, b)) {
         for (int i = 0; i < numVertices; i++) {
             if (!visited[i]) {
                 // Iniciar un nuevo recorrido DFS desde este vértice no visitado
-                stack.push((T)get(i)); // Empujar el dato del vértice actual a la pila
-                visited[i] = true; // Marcarlo como visitado
+                stack.push((T)get(i));
+                visited[i] = true;
                 sb.append(get(i)).append(", "); // Añadirlo al resultado
 
                 while (!stack.isEmpty()) {
@@ -271,7 +271,7 @@ if(!containsEdge(a, b)) {
         }
 
         int numVertices = size();
-        boolean[] visited = new boolean[numVertices]; // Array para controlar los vértices visitados
+        boolean[] visited = new boolean[numVertices];
         StringBuilder sb = new StringBuilder(); // Para construir la cadena de recorrido
         LinkedQueue<T> queue = new LinkedQueue<>(); // Cola para el recorrido BFS
 
@@ -280,12 +280,12 @@ if(!containsEdge(a, b)) {
             if (!visited[i]) {
                 // Iniciar un nuevo recorrido BFS desde este vértice no visitado
                 T startVertexData = (T)get(i);
-                visited[i] = true; // Marcarlo como visitado
-                queue.enQueue(startVertexData); // Encolar el dato del vértice actual
+                visited[i] = true;
+                queue.enQueue(startVertexData);
                 sb.append(startVertexData).append(", "); // Añadirlo al resultado
 
                 while (!queue.isEmpty()) {
-                    T currentVertexData = queue.deQueue(); // Desencolar el vértice actual
+                    T currentVertexData = queue.deQueue();
                     int currentVertexIndex = getIndexOfVertex(currentVertexData); // Obtener su índice
 
                     // Recorrer los vecinos del vértice actual
@@ -295,8 +295,8 @@ if(!containsEdge(a, b)) {
                         int neighborIndex = getIndexOfVertex(neighborData);
 
                         if (!visited[neighborIndex]) {
-                            visited[neighborIndex] = true; // Marcarlo como visitado
-                            queue.enQueue(neighborData); // Encolar el vecino
+                            visited[neighborIndex] = true;
+                            queue.enQueue(neighborData);
                             sb.append(neighborData).append(", "); // Añadirlo al resultado
                         }
                         neighborIterator = neighborIterator.neighbor;

@@ -73,29 +73,35 @@ public class LinkedList <T> implements List<T> {
 
     @Override
     public void remove(T element) throws ListException {
-        if(isEmpty()){
+        if (isEmpty()) {
             throw new ListException("Linked List is empty");
         }
-        //Caso 1. Cuando el elemento a suprimir es el primero en la lista
-        if(equals(head.data, element)){
+
+        // Case 1: Element to remove is the head
+        if (equals(head.data, element)) {
             head = head.next;
-            if(head==null) tail = null; //si la lista quedo vacia
-        }
-        //Caso general. El elemento a suprimir puede estar en el medio o al final
-        else{
-            Node<T> prev = head;
-            while(prev.next != null){
-                if(equals(prev.next.data, element)){
-                    Node<T> removed = prev.next;
-                    prev.next = removed.next;
-                    if(prev.next == null) tail = prev; //si se elimino el ultimo
-                    return;
-                }
-                prev = prev.next; //Muevo el auxiliar
-                if(prev.next == null) break;
+            if (head == null) { // List became empty
+                tail = null;
             }
-            tail = tail!=null? getNodeByIndex(indexOf(getLast())) : null;
+            return;
         }
+
+        // Case 2: Element to remove is in the middle or at the tail
+        Node<T> prev = head;
+        Node<T> current = head.next;
+        while (current != null) {
+            if (equals(current.data, element)) {
+                prev.next = current.next;
+                if (current == tail) { // Removed the tail node
+                    tail = prev;
+                }
+                return;
+            }
+            prev = current;
+            current = current.next;
+        }
+        // If element was not found, no action needed or throw an exception
+        // For now, assuming it's fine if element is not found.
     }
 
 
@@ -155,7 +161,7 @@ public class LinkedList <T> implements List<T> {
             throw new ListException("Linked List is empty");
         }
         Node<T> aux = head;
-        int index = 1;
+        int index = 0; // Changed from 1 to 0 for 0-based indexing
         while(aux!= null){
             if(equals(aux.data, element)) return index;
             index++;
@@ -213,7 +219,7 @@ public class LinkedList <T> implements List<T> {
             throw new ListException("Linked list is empty");
         }
         Node<T> aux = head;
-        int count = 1;
+        int count = 0; // Changed from 1 to 0 for 0-based indexing
         while(aux != null){
             if (count == index) return aux.data;
             count++;
@@ -248,7 +254,7 @@ public class LinkedList <T> implements List<T> {
             throw new ListException("Linked list is empty");
         }
         Node<T> aux = head;
-        int pos = 1;
+        int pos = 0; // Changed from 1 to 0 for 0-based indexing
         while(aux != null){
             if (pos == index) return aux;
             aux = aux.next;
