@@ -8,7 +8,9 @@ import model.Queue.QueueException;
 import model.Stack.LinkedStack;
 import model.Stack.StackException;
 
-public class LinkedGraph<T extends Comparable<T>> extends LinkedList implements Graph<T> {
+import java.util.Objects; // Import Objects for equals method
+
+public class LinkedGraph<T extends Comparable<T>> extends LinkedList<T> implements Graph<T> {
     public boolean directed;
     public LinkedStack<Integer> stack;
     public LinkedQueue<Integer> queue;
@@ -21,20 +23,19 @@ public class LinkedGraph<T extends Comparable<T>> extends LinkedList implements 
     }
 
     @Override
-    public boolean containsVertex(T element) throws GraphException, ListException {
+    public boolean containsVertex(T element) throws ListException { // Removed GraphException
         return contains(element);
     }
 
     @Override
-    public boolean containsEdge(T a, T b) throws GraphException, ListException {
-        boolean containsB = false;
+    public boolean containsEdge(T a, T b) throws ListException { // Removed GraphException
         Node<T> nodeA = getNode(a);
         Node<T> nodeB = getNode(b);
 
-        if (!directed)
-            return !directed ? getNodeNeighbor(nodeA, b) != null && getNodeNeighbor(nodeB, a) != null
-                    : getNodeNeighbor(nodeA, b) != null;
-
+        if (!directed) { // If undirected
+            return getNodeNeighbor(nodeA, b) != null && getNodeNeighbor(nodeB, a) != null;
+        }
+        // If directed
         return getNodeNeighbor(nodeA, b) != null;
     }
 
@@ -72,8 +73,9 @@ public class LinkedGraph<T extends Comparable<T>> extends LinkedList implements 
 
     @Override
     public void addEdge(T a, T b) throws GraphException, ListException {
-    if(containsVertex(a)|| !containsVertex(b))
-        throw new GraphException("Linked Graph is Empty");
+    if(!containsVertex(a) || !containsVertex(b)) // Corrected condition
+        throw new GraphException("Cannot add edge. One or both vertices do not exist in the graph."); // Corrected message
+
 if(!containsEdge(a, b)) {
     Node<T> nodeA = getNode(a);
     //a partir del nodo A construya la lista de vecinos
@@ -105,11 +107,17 @@ if(!containsEdge(a, b)) {
         if(containsEdge(a, b)) {
             Node<T> nodeA = getNode(a);
             //recuperamos la lista de vecinos del nodo A para settear el peso
-            getNodeNeighbor(nodeA, b).weight = weight; //null para el peso
+            Node<T> neighborA = getNodeNeighbor(nodeA, b);
+            if (neighborA != null) { // Add null check
+                neighborA.weight = weight;
+            }
             if (!directed) {
                 Node<T> nodeB = getNode(b);
                 //recuperamos la lista de vecinos del nodo B para settear el peso
-                getNodeNeighbor(nodeB, a).weight = weight; //null para el peso
+                Node<T> neighborB = getNodeNeighbor(nodeB, a);
+                if (neighborB != null) { // Add null check
+                    neighborB.weight = weight;
+                }
             }
         }
     }
@@ -127,7 +135,10 @@ if(!containsEdge(a, b)) {
         } else {
             // If edge exists, just update the weight
             Node<T> nodeA = getNode(a);
-            getNodeNeighbor(nodeA, b).weight = c;
+            Node<T> neighborA = getNodeNeighbor(nodeA, b);
+            if (neighborA != null) { // Add null check
+                neighborA.weight = c;
+            }
         }
 
         // If undirected, do the same for (b, a)
@@ -137,15 +148,18 @@ if(!containsEdge(a, b)) {
                 addNeighbor(nodeB, a, c); // Add neighbor with weight
             } else {
                 Node<T> nodeB = getNode(b);
-                getNodeNeighbor(nodeB, a).weight = c;
+                Node<T> neighborB = getNodeNeighbor(nodeB, a);
+                if (neighborB != null) { // Add null check
+                    neighborB.weight = c;
+                }
             }
         }
     }
 
     @Override
     public void removeVertex(T element) throws GraphException, ListException {
-        if (containsVertex(element))
-            throw new GraphException("Adjacency list Graph is Empty");
+        if (!containsVertex(element))
+            throw new GraphException("No se puede remover vertex. No existe en el grafo."); // Corrected message
 
         remove(element); //eliminamos el vertice del grafo
         //buscamos el rastro del vertice en las listas enlazadas de vecinos de los otros vertices
@@ -156,18 +170,18 @@ if(!containsEdge(a, b)) {
         }
     }
 
-    private void removeNeighbor(Node<T> headNode, T element) throws ListException {
-        if(headNode.neighbor==null) throw new ListException("Linked List in Graph is Empty");
+    private void removeNeighbor(Node<T> headNode, T element) { // Removed ListException
+        if(headNode.neighbor==null) return; // Modified: return silently if no neighbors
 
         //Caso 1. el elemento a suprimir es el primero
-        if(equals(headNode.neighbor.data, element)) {
+        if(Objects.equals(headNode.neighbor.data, element)) { // Used Objects.equals
             headNode.neighbor = headNode.neighbor.neighbor; //queda apuntando al sgte nodo vecino
         }
         //Caso 2. El elemento a suprimir puede estar en medio o al final de la lista
         else {
             Node<T> prev = headNode.neighbor; //anterior
             while(prev.neighbor!=null) {
-                if(equals(prev.neighbor.data, element)){
+                if(Objects.equals(prev.neighbor.data, element)){ // Used Objects.equals
                     Node<T> removed = prev.neighbor; //es el nodo a eliminar
                     //desenlaza el nodo
                     prev.neighbor = removed.neighbor;
@@ -195,10 +209,10 @@ if(!containsEdge(a, b)) {
 
     /***
      * RECORRIDO POR PROFUNDIDAD
-     * @return
-     * @throws model.graph.GraphException
-     * @throws model.Stack.StackException
-     * @throws model.LinkedList.ListException
+     * @return A string representation of the DFS traversal
+     * @throws model.graph.GraphException If the graph is empty
+     * @throws model.Stack.StackException If there's an issue with the stack
+     * @throws model.LinkedList.ListException If there's an issue with the linked list operations
      */
     @Override
     public String dfs() throws GraphException, StackException, ListException {
@@ -215,7 +229,7 @@ if(!containsEdge(a, b)) {
         for (int i = 0; i < numVertices; i++) {
             if (!visited[i]) {
                 // Iniciar un nuevo recorrido DFS desde este vértice no visitado
-                stack.push((T)get(i));
+                stack.push(get(i)); // Removed redundant cast
                 visited[i] = true;
                 sb.append(get(i)).append(", "); // Añadirlo al resultado
 
@@ -253,7 +267,7 @@ if(!containsEdge(a, b)) {
         }
 
         // Eliminar la coma y el espacio finales si la cadena no está vacía
-        if (sb.length() > 0) {
+        if (!sb.isEmpty()) { // Replaced sb.length() > 0
             sb.setLength(sb.length() - 2);
         }
         return sb.toString();
@@ -261,8 +275,10 @@ if(!containsEdge(a, b)) {
 
     /***
      * RECORRIDO POR AMPLITUD
-     * @return
-     * @throws model.graph.GraphException
+     * @return A string representation of the BFS traversal
+     * @throws model.graph.GraphException If the graph is empty
+     * @throws model.Queue.QueueException If there's an issue with the queue
+     * @throws model.LinkedList.ListException If there's an issue with the linked list operations
      */
     @Override
     public String bfs() throws GraphException, QueueException, ListException {
@@ -279,7 +295,7 @@ if(!containsEdge(a, b)) {
         for (int i = 0; i < numVertices; i++) {
             if (!visited[i]) {
                 // Iniciar un nuevo recorrido BFS desde este vértice no visitado
-                T startVertexData = (T)get(i);
+                T startVertexData = get(i); // Removed redundant cast
                 visited[i] = true;
                 queue.enQueue(startVertexData);
                 sb.append(startVertexData).append(", "); // Añadirlo al resultado
@@ -306,14 +322,14 @@ if(!containsEdge(a, b)) {
         }
 
         // Eliminar la coma y el espacio finales si la cadena no está vacía
-        if (sb.length() > 0) {
+        if (!sb.isEmpty()) { // Replaced sb.length() > 0
             sb.setLength(sb.length() - 2);
         }
         return sb.toString();
     }
 
     private Node<T> getNodeNeighbor(Node<T> headnode, T element) {
-        if (headnode.neighbor == null) return null;
+        if (headnode == null || headnode.neighbor == null) return null; // Added null check for headnode
         Node<T> aux = headnode.neighbor;
         while (aux != null) {
             if (aux.data.compareTo(element) == 0) return aux;
@@ -333,12 +349,13 @@ if(!containsEdge(a, b)) {
     }
 
     /// // AYUDAS ////////////
+    // Replaced custom equals with Objects.equals
     public boolean equals(T a, T b) {
-        return a == null ? b == null : a.equals(b);
+        return Objects.equals(a, b);
     }
 
-    // Método genérico de comparación
-    public int compareElements(T a, T b) {
-        return a.compareTo(b);
-    }
+    // Método genérico de comparación - Removed as it's unused
+    // public int compareElements(T a, T b) {
+    //     return a.compareTo(b);
+    // }
 }
