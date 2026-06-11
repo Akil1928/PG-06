@@ -45,6 +45,8 @@ class LinkedGraphTest {
             graph.addEdgeAndWeight(5, 6, new Random().nextInt(5, 30));
             System.out.println(graph);
 
+
+
             //eliminemos algunas aristas
             System.out.println("Remove Edge: 4-5");
             graph.removeEdge(4, 5);

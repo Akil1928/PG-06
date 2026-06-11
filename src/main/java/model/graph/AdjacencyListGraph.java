@@ -12,6 +12,62 @@ public class AdjacencyListGraph<T extends Comparable<T>> extends AdjacencyMatrix
     }
 
     @Override
+    public int getVertexDegree(T element) throws GraphException, ListException {
+        if (isEmpty()) throw new GraphException("Adjacency List Graph is Empty");
+        if (!containsVertex(element)) throw new GraphException("Vertex not found");
+
+        Vertex<T> vertex = getVertex(element);
+        int degree = 0;
+
+        // Contar vecinos en la lista enlazada
+        Node<T> aux = vertex.headnode;
+        while (aux != null) {
+            degree++;
+            aux = aux.neighbor;
+        }
+
+        return degree;
+    }
+
+
+    @Override
+    public int getGraphDegree() throws GraphException, ListException {
+        if (isEmpty()) throw new GraphException("Adjacency List Graph is Empty");
+
+        int maxDegree = 0;
+
+        // Encontrar el grado máximo
+        for (int i = 0; i < counter; i++) {
+            int degree = getVertexDegree(vertexList[i].data);
+            if (degree > maxDegree) {
+                maxDegree = degree;
+            }
+        }
+
+        return maxDegree;
+    }
+
+
+    @Override
+    public int totalEdges() throws GraphException, ListException {
+        if (isEmpty()) throw new GraphException("Adjacency List Graph is Empty");
+
+        int edges = 0;
+
+        // Contar todas las aristas en las listas de adyacencia
+        for (int i = 0; i < counter; i++) {
+            Node<T> aux = vertexList[i].headnode;
+            while (aux != null) {
+                edges++;
+                aux = aux.neighbor;
+            }
+        }
+
+        // Si es no dirigido, dividir por 2 (cada arista se cuenta dos veces)
+        return directed ? edges : edges / 2;
+    }
+
+    @Override
     public boolean containsEdge(T a, T b) throws GraphException, ListException {
         boolean getVertexA = false;
         boolean getVertexB = false;
@@ -162,11 +218,7 @@ public class AdjacencyListGraph<T extends Comparable<T>> extends AdjacencyMatrix
         return headNode;
     }
 
-    /**
-     * RECORRIDO EN PROFUNDIDAD (DFS)
-     * Sigue el mismo patrón que AdjacencyMatrixGraph pero usa la lista
-     * enlazada de vecinos (headnode) en lugar de la matriz de adyacencia.
-     */
+
     @Override
     public String dfs() throws GraphException, StackException, ListException {
         if (isEmpty()) throw new GraphException("Adjacency List Graph is Empty");
@@ -192,11 +244,6 @@ public class AdjacencyListGraph<T extends Comparable<T>> extends AdjacencyMatrix
         return info;
     }
 
-    /**
-     * RECORRIDO POR AMPLITUD (BFS)
-     * Sigue el mismo patrón que AdjacencyMatrixGraph pero usa la lista
-     * enlazada de vecinos (headnode) en lugar de la matriz de adyacencia.
-     */
     @Override
     public String bfs() throws GraphException, QueueException, ListException {
         if (isEmpty()) throw new GraphException("Adjacency List Graph is Empty");
@@ -221,11 +268,7 @@ public class AdjacencyListGraph<T extends Comparable<T>> extends AdjacencyMatrix
         return info;
     }
 
-    /**
-     * Recorre la lista enlazada de vecinos del vértice en la posición 'index'
-     * y retorna el índice del primer vecino no visitado, o -1 si no hay ninguno.
-     * Reemplaza a adjacentVertexNotVisited() que usaba la matriz de adyacencia.
-     */
+
     private int adjacentVertexNotVisitedByList(int index) {
         Node<T> aux = vertexList[index].headnode; // primer vecino en la lista enlazada
         while (aux != null) {

@@ -39,6 +39,8 @@ class AdjacencyMatrixGraphTest {
             graph.removeVertex(3);
             System.out.println(graph);
 
+
+
             graph.addVertex(6); graph.addVertex(7);
             graph.addEdgeAndWeight(4,7, new Random().nextInt(5,30));
             graph.addEdgeAndWeight(5,6, new Random().nextInt(5,30));

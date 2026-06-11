@@ -243,6 +243,67 @@ public class LinkedGraph<T extends Comparable<T>> extends LinkedList implements 
         return info.toString();
     }
 
+    @Override
+    public int getVertexDegree(T element) throws GraphException, ListException {
+        if (isEmpty()) throw new GraphException("Linked Graph is Empty");
+        if (!containsVertex(element)) throw new GraphException("Vertex not found");
+
+        Node<T> vertex = getNode(element);
+        int degree = 0;
+
+        // Contar vecinos
+        Node<T> aux = vertex.neighbor;
+        while (aux != null) {
+            degree++;
+            aux = aux.neighbor;
+        }
+
+        return degree;
+    }
+
+
+    @Override
+    public int getGraphDegree() throws GraphException, ListException {
+        if (isEmpty()) throw new GraphException("Linked Graph is Empty");
+
+        int maxDegree = 0;
+        int numVertices = size();
+
+        // Encontrar el grado máximo
+        for (int i = 1; i <= numVertices; i++) {  // Índices base-1
+            T vertexData = (T) get(i);
+            int degree = getVertexDegree(vertexData);
+            if (degree > maxDegree) {
+                maxDegree = degree;
+            }
+        }
+
+        return maxDegree;
+    }
+
+
+    @Override
+    public int totalEdges() throws GraphException, ListException {
+        if (isEmpty()) throw new GraphException("Linked Graph is Empty");
+
+        int edges = 0;
+        int numVertices = size();
+
+        // Contar todas las aristas
+        for (int i = 1; i <= numVertices; i++) {  // Índices base-1
+            Node<T> vertex = getNodeByIndex(i);
+            if (vertex != null) {
+                Node<T> aux = vertex.neighbor;
+                while (aux != null) {
+                    edges++;
+                    aux = aux.neighbor;
+                }
+            }
+        }
+
+        // Si es no dirigido, dividir por 2 (cada arista se cuenta dos veces)
+        return directed ? edges : edges / 2;
+    }
     private int adjacentVertexNotVisitedByList(int index, boolean[] visited) throws ListException {
         Node<T> currentVertex = getNodeByIndex(index);
         if (currentVertex == null) return -1;

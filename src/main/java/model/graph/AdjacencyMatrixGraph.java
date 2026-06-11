@@ -252,6 +252,60 @@ public class AdjacencyMatrixGraph<T extends Comparable<T>> implements Graph<T> {
         return info;
     }
 
+    @Override
+    public int getVertexDegree(T element) throws GraphException, ListException {
+        if (isEmpty()) throw new GraphException("Adjacency Matrix Graph is Empty");
+        if (!containsVertex(element)) throw new GraphException("Vertex not found");
+
+        int index = indexOf(element);
+        int degree = 0;
+
+        // Contar aristas conectadas al vértice
+        for (int i = 0; i < counter; i++) {
+            if (!adjacencyMatrix[index][i].equals(0)) {
+                degree++;
+            }
+        }
+
+        return degree;
+    }
+
+
+    @Override
+    public int getGraphDegree() throws GraphException, ListException {
+        if (isEmpty()) throw new GraphException("Adjacency Matrix Graph is Empty");
+
+        int maxDegree = 0;
+
+        // Encontrar el grado máximo
+        for (int i = 0; i < counter; i++) {
+            int degree = getVertexDegree(vertexList[i].data);
+            if (degree > maxDegree) {
+                maxDegree = degree;
+            }
+        }
+
+        return maxDegree;
+    }
+
+    @Override
+    public int totalEdges() throws GraphException, ListException {
+        if (isEmpty()) throw new GraphException("Adjacency Matrix Graph is Empty");
+
+        int edges = 0;
+
+        // Contar aristas en la matriz
+        for (int i = 0; i < counter; i++) {
+            for (int j = 0; j < counter; j++) {
+                if (!adjacencyMatrix[i][j].equals(0)) {
+                    edges++;
+                }
+            }
+        }
+
+        // Si es no dirigido, dividir por 2 (cada arista se cuenta dos veces)
+        return directed ? edges : edges / 2;
+    }
     //setteamos el atributo visitado del vertice respectivo
     private void setVisited(boolean value) {
         for (int i = 0; i < counter; i++) {
