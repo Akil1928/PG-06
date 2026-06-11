@@ -10,7 +10,7 @@ import java.util.Random;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LinkedGraphTest {
-
+//pru
     @Test
     void testLinkedGraph() {
         LinkedGraph<Integer> graph = new LinkedGraph<>(false);
