@@ -10,7 +10,7 @@ import java.util.Random;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LinkedGraphTest {
-//pru
+    //pru
     @Test
     void testLinkedGraph() {
         LinkedGraph<Integer> graph = new LinkedGraph<>(false);
@@ -29,7 +29,7 @@ class LinkedGraphTest {
             System.out.println(graph);
             System.out.println("DFS Transversal: " + graph.dfs());
             System.out.println("BFS Transversal: " + graph.bfs());
-//a
+
             //eliminemos algunos vertices
             System.out.println("Eliminando el vertice 1...");
             graph.removeVertex(1);
@@ -45,16 +45,14 @@ class LinkedGraphTest {
             graph.addEdgeAndWeight(5, 6, new Random().nextInt(5, 30));
             System.out.println(graph);
 
-
             // Prueba de los métodos de grado y aristas
+            // El grafo ahora contiene: [0, 4, 5, 6, 7, 8, 9]
             System.out.println("\n=== MÉTRICAS DEL GRAFO ===");
             System.out.println("Grado del vértice 0: " + graph.getVertexDegree(0));
-            System.out.println("Grado del vértice 1: " + graph.getVertexDegree(1));
-            System.out.println("Grado del vértice 2: " + graph.getVertexDegree(2));
+            System.out.println("Grado del vértice 4: " + graph.getVertexDegree(4));
+            System.out.println("Grado del vértice 5: " + graph.getVertexDegree(5));
             System.out.println("Grado máximo del grafo: " + graph.getGraphDegree());
             System.out.println("Total de aristas: " + graph.totalEdges());
-
-
 
             //eliminemos algunas aristas
             System.out.println("Remove Edge: 4-5");

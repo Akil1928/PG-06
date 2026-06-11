@@ -18,7 +18,6 @@ class AdjacencyListGraphTest {
             for (int i = 0; i < 10; i++)
                 graph.addVertex(i);
 
-            //agregamos aristas - AHORA CONECTAMOS DESDE EL VÉRTICE 0
             graph.addEdgeAndWeight(0, 1, new Random().nextInt(5, 30));
             graph.addEdgeAndWeight(1, 2, new Random().nextInt(5, 30));
             graph.addEdgeAndWeight(1, 3, new Random().nextInt(5, 30));
@@ -39,8 +38,6 @@ class AdjacencyListGraphTest {
             graph.removeVertex(3);
             System.out.println(graph);
 
-
-
             graph.addVertex(6);
             graph.addVertex(7);
             graph.addEdgeAndWeight(4, 7, new Random().nextInt(5, 30));
@@ -48,10 +45,11 @@ class AdjacencyListGraphTest {
             System.out.println(graph);
 
             // Prueba de los métodos de grado y aristas
+            // El grafo ahora contiene: [0, 4, 5, 6, 7, 8, 9]
             System.out.println("\n=== MÉTRICAS DEL GRAFO ===");
             System.out.println("Grado del vértice 0: " + graph.getVertexDegree(0));
-            System.out.println("Grado del vértice 1: " + graph.getVertexDegree(1));
-            System.out.println("Grado del vértice 2: " + graph.getVertexDegree(2));
+            System.out.println("Grado del vértice 4: " + graph.getVertexDegree(4));
+            System.out.println("Grado del vértice 5: " + graph.getVertexDegree(5));
             System.out.println("Grado máximo del grafo: " + graph.getGraphDegree());
             System.out.println("Total de aristas: " + graph.totalEdges());
 
