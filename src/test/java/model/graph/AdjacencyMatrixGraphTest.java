@@ -46,6 +46,14 @@ class AdjacencyMatrixGraphTest {
             graph.addEdgeAndWeight(5,6, new Random().nextInt(5,30));
             System.out.println(graph);
 
+            // Prueba de los métodos de grado y aristas
+            System.out.println("\n=== MÉTRICAS DEL GRAFO ===");
+            System.out.println("Grado del vértice 0: " + graph.getVertexDegree(0));
+            System.out.println("Grado del vértice 1: " + graph.getVertexDegree(1));
+            System.out.println("Grado del vértice 2: " + graph.getVertexDegree(2));
+            System.out.println("Grado máximo del grafo: " + graph.getGraphDegree());
+            System.out.println("Total de aristas: " + graph.totalEdges());
+
             //eliminemos algunas aristas
             System.out.println("Remove Edge: 4-5");
             graph.removeEdge(4,5);
