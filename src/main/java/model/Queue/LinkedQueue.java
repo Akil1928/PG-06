@@ -2,7 +2,8 @@ package model.Queue;
 
 import model.Node;
 
-public class LinkedQueue<T> implements MyQueue<T> {
+public class
+LinkedQueue<T> implements MyQueue<T> {
     private Node<T> front;
     private Node<T> rear;
     private int size;

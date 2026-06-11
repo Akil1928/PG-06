@@ -44,13 +44,13 @@ public class LinkedGraph<T extends Comparable<T>> extends LinkedList implements 
         sb.append("Graph Type: ").append(graphType).append("\n");
 
         sb.append(super.toString());
-        //mostramos los vertices y sus aristas
+        // mostramos los vertices y sus aristas
         try {
             int len = size();
-            for (int i = 1; i <= len; i++) {  // Índices base-1
+            for (int i = 0; i < len; i++) {  // índices base-0
                 Node<T> node = getNodeByIndex(i);
                 if (node != null) {
-                    sb.append("\n(").append(get(i)).append(")---- Vertex [").append(node.data).append("]");
+                    sb.append("\n(").append(i + 1).append(")---- Vertex [").append(node.data).append("]");
                     Node<T> aux = node.neighbor;
                     while (aux != null) {
                         sb.append("\n Edge: \"").append(aux.data).append(", weight: ").append(aux.weight).append("\"");
@@ -141,7 +141,7 @@ public class LinkedGraph<T extends Comparable<T>> extends LinkedList implements 
 
         remove(element);
         int len = size();
-        for (int i = 1; i <= len; i++) {  // Índices base-1
+        for (int i = 0; i < len; i++) {  // índices base-0
             Node<T> node = getNodeByIndex(i);
             if (node != null && node.neighbor != null) {
                 removeNeighbor(node, element);
@@ -191,15 +191,15 @@ public class LinkedGraph<T extends Comparable<T>> extends LinkedList implements 
         if (isEmpty()) throw new GraphException("Linked Graph is Empty");
 
         int numVertices = size();
-        boolean[] visited = new boolean[numVertices + 1]; // +1 para índices base-1
+        boolean[] visited = new boolean[numVertices]; // base-0
         StringBuilder info = new StringBuilder();
 
         stack.clear();
 
-        // Inicia en el vértice 1 (primer elemento)
-        info.append(get(1)).append(", ");
-        visited[1] = true;
-        stack.push(1);
+        // Inicia en el vértice 0 (primer elemento, base-0)
+        info.append(get(0)).append(", ");
+        visited[0] = true;
+        stack.push(0);
 
         while (!stack.isEmpty()) {
             int index = adjacentVertexNotVisitedByList((int) stack.top(), visited);
@@ -220,15 +220,15 @@ public class LinkedGraph<T extends Comparable<T>> extends LinkedList implements 
         if (isEmpty()) throw new GraphException("Linked Graph is Empty");
 
         int numVertices = size();
-        boolean[] visited = new boolean[numVertices + 1]; // +1 para índices base-1
+        boolean[] visited = new boolean[numVertices]; // base-0
         StringBuilder info = new StringBuilder();
 
         queue.clear();
 
-        // Inicia en el vértice 1 (primer elemento)
-        info.append(get(1)).append(", ");
-        visited[1] = true;
-        queue.enQueue(1);
+        // Inicia en el vértice 0 (primer elemento, base-0)
+        info.append(get(0)).append(", ");
+        visited[0] = true;
+        queue.enQueue(0);
         int v2;
 
         while (!queue.isEmpty()) {
@@ -251,7 +251,6 @@ public class LinkedGraph<T extends Comparable<T>> extends LinkedList implements 
         Node<T> vertex = getNode(element);
         int degree = 0;
 
-        // Contar vecinos
         Node<T> aux = vertex.neighbor;
         while (aux != null) {
             degree++;
@@ -261,7 +260,6 @@ public class LinkedGraph<T extends Comparable<T>> extends LinkedList implements 
         return degree;
     }
 
-
     @Override
     public int getGraphDegree() throws GraphException, ListException {
         if (isEmpty()) throw new GraphException("Linked Graph is Empty");
@@ -269,8 +267,7 @@ public class LinkedGraph<T extends Comparable<T>> extends LinkedList implements 
         int maxDegree = 0;
         int numVertices = size();
 
-        // Encontrar el grado máximo
-        for (int i = 1; i <= numVertices; i++) {  // Índices base-1
+        for (int i = 0; i < numVertices; i++) {  // índices base-0
             T vertexData = (T) get(i);
             int degree = getVertexDegree(vertexData);
             if (degree > maxDegree) {
@@ -281,7 +278,6 @@ public class LinkedGraph<T extends Comparable<T>> extends LinkedList implements 
         return maxDegree;
     }
 
-
     @Override
     public int totalEdges() throws GraphException, ListException {
         if (isEmpty()) throw new GraphException("Linked Graph is Empty");
@@ -289,8 +285,7 @@ public class LinkedGraph<T extends Comparable<T>> extends LinkedList implements 
         int edges = 0;
         int numVertices = size();
 
-        // Contar todas las aristas
-        for (int i = 1; i <= numVertices; i++) {  // Índices base-1
+        for (int i = 0; i < numVertices; i++) {  // índices base-0
             Node<T> vertex = getNodeByIndex(i);
             if (vertex != null) {
                 Node<T> aux = vertex.neighbor;
@@ -304,6 +299,7 @@ public class LinkedGraph<T extends Comparable<T>> extends LinkedList implements 
         // Si es no dirigido, dividir por 2 (cada arista se cuenta dos veces)
         return directed ? edges : edges / 2;
     }
+
     private int adjacentVertexNotVisitedByList(int index, boolean[] visited) throws ListException {
         Node<T> currentVertex = getNodeByIndex(index);
         if (currentVertex == null) return -1;
@@ -330,8 +326,10 @@ public class LinkedGraph<T extends Comparable<T>> extends LinkedList implements 
     }
 
     private int getIndexOfVertex(T element) throws ListException {
-        for (int i = 1; i <= size(); i++) {  // Índices base-1
-            if (get(i).equals(element)) {
+        int len = size();
+        for (int i = 0; i < len; i++) {  // índices base-0
+            Object val = get(i);
+            if (val != null && val.equals(element)) {
                 return i;
             }
         }
