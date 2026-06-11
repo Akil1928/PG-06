@@ -19,7 +19,6 @@ class AdjacencyMatrixGraphTest {
             for (int i = 0; i < 10; i++)
                 graph.addVertex(i);
 
-            //agregamos aristas - AHORA CONECTAMOS DESDE EL VÉRTICE 0
             graph.addEdgeAndWeight(0,1, new Random().nextInt(5,30));
             graph.addEdgeAndWeight(1,2, new Random().nextInt(5,30));
             graph.addEdgeAndWeight(1,3, new Random().nextInt(5,30));

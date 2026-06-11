@@ -1,6 +1,8 @@
 package model.graph;
 
 import model.LinkedList.ListException;
+import model.Queue.QueueException;
+import model.Stack.StackException;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
@@ -25,12 +27,35 @@ class AdjacencyListGraphTest {
             graph.addEdgeAndWeight(3, 4, new Random().nextInt(5, 30));
             graph.addEdgeAndWeight(4, 5, new Random().nextInt(5, 30));
             System.out.println(graph);
+            System.out.println("DFS Transversal: " + graph.dfs());
+            System.out.println("BFS Transversal: " + graph.bfs());
 
-        } catch (GraphException e) {
+            //eliminemos algunos vertices
+            System.out.println("Eliminando el vertice 1...");
+            graph.removeVertex(1);
+            System.out.println("Eliminando el vertice 2...");
+            graph.removeVertex(2);
+            System.out.println("Eliminando el vertice 3...");
+            graph.removeVertex(3);
+            System.out.println(graph);
+
+            graph.addVertex(6);
+            graph.addVertex(7);
+            graph.addEdgeAndWeight(4, 7, new Random().nextInt(5, 30));
+            graph.addEdgeAndWeight(5, 6, new Random().nextInt(5, 30));
+            System.out.println(graph);
+
+            //eliminemos algunas aristas
+            System.out.println("Remove Edge: 4-5");
+            graph.removeEdge(4, 5);
+
+        } catch (GraphException | ListException e) {
             throw new RuntimeException(e);
-        } catch (ListException e) {
+        } catch (QueueException e) {
+            throw new RuntimeException(e);
+        } catch (StackException e) {
             throw new RuntimeException(e);
         }
+        System.out.println(graph);
     }
-
 }

@@ -6,6 +6,7 @@ import model.Queue.QueueException;
 import model.Stack.StackException;
 
 public class AdjacencyListGraph<T extends Comparable<T>> extends AdjacencyMatrixGraph<T> {
+
     public AdjacencyListGraph(int n, boolean directed) {
         super(n, directed);
     }
@@ -109,26 +110,25 @@ public class AdjacencyListGraph<T extends Comparable<T>> extends AdjacencyMatrix
 
     @Override
     public void removeVertex(T element) throws GraphException, ListException {
-        if (containsVertex(element))
-            throw new GraphException("Adjacency list Graph is Empty");
+        if (!containsVertex(element))
+            throw new GraphException("Adjacency list Graph Not Contains Vertex");
 
         int index = indexOf(element);
-        if (index != -1) { //si el vertice existe en la lista de vertices
+        if (index != -1) {
             for (int i = index; i < counter - 1; i++)
                 vertexList[i] = vertexList[i + 1];
-            counter--;//lo debemos decrementar por el vertice suprimido
 
-            //ahora debemos buscar el rastro del vertice suprimido en las listas enlazadas de los otros vertices
-            //de vecinos a los otros vertices
+            vertexList[counter - 1] = null;
+            counter--;
+
             for (int i = 0; i < counter; i++) {
                 Vertex<T> vertex = vertexList[i];
-                vertex.headnode = removeNeighbor(vertex.headnode, element);
+                if (vertex.headnode != null) {
+                    vertex.headnode = removeNeighbor(vertex.headnode, element);
+                }
             }
-
         }
-
     }
-
     @Override
     public void removeEdge(T a, T b) throws GraphException, ListException {
         if (!containsVertex(a) || !containsVertex(b))
@@ -148,32 +148,100 @@ public class AdjacencyListGraph<T extends Comparable<T>> extends AdjacencyMatrix
 
     private Node<T> removeNeighbor(Node<T> headNode, T element) throws ListException {
         if (headNode == null) throw new ListException("Linked List is Empty");
-        //El elemento a suprimir es el primero
-        if(equals(headNode.data, element)) headNode = headNode.neighbor; //Queda apuntado al siguiente nodo vecino
-            //Caso 2. El elemento a suprimir puede estar en medio o al final de la lista
-        else{
-            Node<T> prev = headNode;//anterior
-            while(prev.neighbor!=null){
-                if(equals(prev.neighbor.data, element)) {
-                    Node<T> removed = prev.neighbor; //Es el nodo a eliminar
-                    //Desenlaza el nodo
+        if (equals(headNode.data, element)) headNode = headNode.neighbor;
+        else {
+            Node<T> prev = headNode;
+            while (prev.neighbor != null) {
+                if (equals(prev.neighbor.data, element)) {
+                    Node<T> removed = prev.neighbor;
                     prev.neighbor = removed.neighbor;
                 }
-                prev = prev.neighbor; //Lo movemos al siguiente vecino
+                prev = prev.neighbor;
             }
-
         }
-        return headNode;//Modificado sin el nodo eliminado
+        return headNode;
     }
 
+    /**
+     * RECORRIDO EN PROFUNDIDAD (DFS)
+     * Sigue el mismo patrón que AdjacencyMatrixGraph pero usa la lista
+     * enlazada de vecinos (headnode) en lugar de la matriz de adyacencia.
+     */
     @Override
     public String dfs() throws GraphException, StackException, ListException {
-        return super.dfs();
+        if (isEmpty()) throw new GraphException("Adjacency List Graph is Empty");
+
+        setVisited(false); // marca todos los vértices como no visitados
+        // inicia en el vértice 0
+        String info = vertexList[0].data + ", ";
+        vertexList[0].setVisited(true); // lo marca
+        stack.clear();
+        stack.push(0); // lo apila
+
+        while (!stack.isEmpty()) {
+            // obtiene un vértice adyacente no visitado desde la lista enlazada
+            int index = adjacentVertexNotVisitedByList((int) stack.top());
+            if (index == -1) // no lo encontró
+                stack.pop();
+            else {
+                vertexList[index].setVisited(true); // lo marca
+                info += vertexList[index].data + ", "; // lo muestra
+                stack.push(index); // inserta la posición
+            }
+        }
+        return info;
     }
 
+    /**
+     * RECORRIDO POR AMPLITUD (BFS)
+     * Sigue el mismo patrón que AdjacencyMatrixGraph pero usa la lista
+     * enlazada de vecinos (headnode) en lugar de la matriz de adyacencia.
+     */
     @Override
     public String bfs() throws GraphException, QueueException, ListException {
-        return super.bfs();
+        if (isEmpty()) throw new GraphException("Adjacency List Graph is Empty");
+
+        setVisited(false); // marca todos los vértices como no visitados
+        // inicia en el vértice 0
+        String info = vertexList[0].data + ", ";
+        vertexList[0].setVisited(true); // lo marca
+        queue.clear();
+        queue.enQueue(0); // encola el elemento
+        int v2;
+
+        while (!queue.isEmpty()) {
+            int v1 = (int) queue.deQueue(); // remueve el vértice de la cola
+            // hasta que no tenga vecinos sin visitar
+            while ((v2 = adjacentVertexNotVisitedByList(v1)) != -1) {
+                vertexList[v2].setVisited(true); // lo marca
+                info += vertexList[v2].data + ", "; // lo muestra
+                queue.enQueue(v2); // lo encola
+            }
+        }
+        return info;
+    }
+
+    /**
+     * Recorre la lista enlazada de vecinos del vértice en la posición 'index'
+     * y retorna el índice del primer vecino no visitado, o -1 si no hay ninguno.
+     * Reemplaza a adjacentVertexNotVisited() que usaba la matriz de adyacencia.
+     */
+    private int adjacentVertexNotVisitedByList(int index) {
+        Node<T> aux = vertexList[index].headnode; // primer vecino en la lista enlazada
+        while (aux != null) {
+            int neighborIndex = indexOf(aux.data); // busca el índice del vecino en vertexList
+            if (neighborIndex != -1 && !vertexList[neighborIndex].isVisited())
+                return neighborIndex; // retorna la posición del vecino no visitado
+            aux = aux.neighbor;
+        }
+        return -1; // no encontró vecino no visitado
+    }
+
+    // settea el atributo visitado de cada vértice
+    private void setVisited(boolean value) {
+        for (int i = 0; i < counter; i++) {
+            vertexList[i].setVisited(value);
+        }
     }
 
     @Override
@@ -183,7 +251,6 @@ public class AdjacencyListGraph<T extends Comparable<T>> extends AdjacencyMatrix
         String graphType = directed ? "Directed" : "Undirected";
         sb.append("Graph Type: ").append(graphType).append("\n");
 
-        // Mostrar todos los vértices y sus vecinos
         for (int i = 0; i < counter; i++) {
             sb.append("\nVertex [").append(i).append("]: ").append(vertexList[i].data);
             sb.append(" -> Neighbors: ");
