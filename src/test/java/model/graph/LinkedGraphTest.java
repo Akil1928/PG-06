@@ -29,7 +29,7 @@ class LinkedGraphTest {
             System.out.println(graph);
             System.out.println("DFS Transversal: " + graph.dfs());
             System.out.println("BFS Transversal: " + graph.bfs());
-
+//a
             //eliminemos algunos vertices
             System.out.println("Eliminando el vertice 1...");
             graph.removeVertex(1);
